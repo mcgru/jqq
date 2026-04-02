@@ -60,6 +60,7 @@ if [ "$oJSON" ]; then
 :
   mapfile -t RULE < <(cat|grep -P "\S")
   for r in "${RULE[@]}"; do
+### sorry for 'instances', 'webapps' - it is for my internal usage, should be removed from code
     r=$( sed -r 's,^(\s*\S+)\.([0-9]+),\1[\2],g' <<<"$r" | sed -r 's,instances\.([0-9]+),instances[\1],g' | sed -r 's,webapps\.([0-9]+),webapps[\1],g' )    #' #replace any a.N with a[N]
     [ "${r:0:1}" != "." ] && r=".$r" ||:
     r=$( awk 'BEGIN{OFS=""}{ k=$1; t=$2; $1=""; $2="";
