@@ -1,0 +1,36 @@
+--- ex1.json	2026-04-02 23:37:10.481092138 +0700
++++ ex2.json	2026-04-02 23:38:39.742068320 +0700
+@@ -1,6 +1,6 @@
+ {
+   "deployment": {
+-    "id": "my67",
++    "id": "my68",
+     "vendor": "myvendor",
+     "regressionTest": false,
+     "items": {
+@@ -19,7 +19,7 @@
+         {
+           "id": "1",
+           "db": {
+-            "prefix": "pppppp1111111",
++            "prefix": "pppppp2222",
+             "userPassword": null
+           },
+           "properties": {
+@@ -29,13 +29,15 @@
+         },
+         {
+           "id": "2"
++        },
++        {
++          "id": "3"
+         }
+       ]
+     },
+     "web": {
+       "common": {
+         "port": 8080,
+-        "webapps": [],
+         "jmxPort": null,
+         "otherJavaProperties": "asdasdasd"
+       },

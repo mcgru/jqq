@@ -1,0 +1,27 @@
+deployment.id	string	my67
+deployment.vendor	string	myvendor
+deployment.regressionTest	boolean	false
+deployment.items.common.db.prefix	string	my_67
+deployment.items.common.db.connection	string	t2:5417
+deployment.items.common.properties.dbconnections2	string	2
+deployment.items.common.properties.dbconnections4	string	2
+deployment.items.common.enableGcLogging	null	null
+deployment.items.instances.0.id	string	1
+deployment.items.instances.0.db.prefix	string	pppppp2222
+deployment.items.instances.0.db.userPassword	null	null
+deployment.items.instances.0.properties."mail.smtp.host"	string	mail.gooooogle.com
+deployment.items.instances.0.properties."service.DispatcherService.testMode"	string	true
+deployment.items.instances.1.id	string	2
+deployment.items.instances.2.id	string	3
+deployment.web.common.port	number	8080
+deployment.web.common.jmxPort	null	null
+deployment.web.common.otherJavaProperties	string	asdasdasd
+deployment.web.instances.0.id	string	1
+deployment.web.instances.0.port	number	6140
+deployment.web.instances.0.maxThreads	number	3000
+deployment.web.instances.1.id	string	2
+deployment.web.instances.2.id	string	3
+otherinfo	string	example
+
+deployment.id	string	my68
+

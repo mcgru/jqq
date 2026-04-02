@@ -1,0 +1,60 @@
+{
+  "deployment": {
+    "id": "my68",
+    "vendor": "myvendor",
+    "regressionTest": false,
+    "items": {
+      "common": {
+        "db": {
+          "prefix": "my_67",
+          "connection": "t2:5417"
+        },
+        "properties": {
+          "dbconnections2": "2",
+          "dbconnections4": "2"
+        },
+        "enableGcLogging": null
+      },
+      "instances": [
+        {
+          "id": "1",
+          "db": {
+            "prefix": "pppppp2222",
+            "userPassword": null
+          },
+          "properties": {
+            "mail.smtp.host": "mail.gooooogle.com",
+            "service.DispatcherService.testMode": "true"
+          }
+        },
+        {
+          "id": "2"
+        },
+        {
+          "id": "3"
+        }
+      ]
+    },
+    "web": {
+      "common": {
+        "port": 8080,
+        "jmxPort": null,
+        "otherJavaProperties": "asdasdasd"
+      },
+      "instances": [
+        {
+          "id": "1",
+          "port": 6140,
+          "maxThreads": 3000
+        },
+        {
+          "id": "2"
+        },
+        {
+          "id": "3"
+        }
+      ]
+    }
+  },
+  "otherinfo": "example"
+}
