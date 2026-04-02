@@ -1,0 +1,92 @@
+#!/bin/bash
+
+### 2025 by mcgru
+
+set -euo pipefail
+oJSON=""
+oGREP=""
+oNULL=""
+oSORT=""
+oVARS=""
+oSHRT=""
+OPTS=$( getopt -o hjgnSzZv -- "$@" )
+eval set -- "$OPTS"
+
+usage(){
+  echo 1>&2 "Description:
+  Filters stdin from json to greppable text (-g) and vice versa (-j)
+  If leaf element of object has a non-alphanumeric name, it is enveloped with '\"'
+Options:
+  -h    -- this help
+  -j    -- to json
+  -g    -- to greppable text
+  -v    -- to greppable text and make 'age.VAR1 string value' as 'VAR1=value1' for bash sourcing
+  -n    -- remove nulls
+  -S    -- sort
+  -z|-Z -- shortify|unshortify
+
+Example usage:
+  jqq -g < file.json  ##  transforms from json to grep
+  jqq    < file.json  ##  the same
+  jqq -j < file.json  ##  transforms from grep to json
+"
+}
+
+while : ; do
+case "$1" in
+  -h) usage; exit 0 ;;
+  -j) oJSON=.  ; oGREP=""; shift ;;
+  -g) oGREP=.  ; oJSON=""; shift ;;
+  -v) oVARS=.  ; oJSON=""; oGREP=.; shift ;;
+  -n) oNULL=.  ; shift ;;
+  -S) oSORT=-S ; shift ;;
+  -z) oSHRT=.  ; shift ;;
+  -Z) oSHRT=u  ; shift ;;
+  --) break ;;
+   *) echo 1>&2 "WARNING: wrong option '${1:-}'. See usage."; usage; exit 1 ;;
+esac
+done
+
+
+if [ "$oNULL" ]; then
+  baseFLT='.|del(..|nulls)'
+else
+  baseFLT='.'
+fi
+
+FLT="${baseFLT}"
+
+if [ "$oJSON" ]; then
+:
+  mapfile -t RULE < <(cat|grep -P "\S")
+  for r in "${RULE[@]}"; do
+    r=$( sed -r 's,^(\s*\S+)\.([0-9]+),\1[\2],g' <<<"$r" | sed -r 's,instances\.([0-9]+),instances[\1],g' | sed -r 's,webapps\.([0-9]+),webapps[\1],g' )    #' #replace any a.N with a[N]
+    [ "${r:0:1}" != "." ] && r=".$r" ||:
+    r=$( awk 'BEGIN{OFS=""}{ k=$1; t=$2; $1=""; $2="";
+                if( t=="." || t=="s" || t=="string" ){ $2="\""; $(NF+1)="\"" }
+                print k "=" $0
+              }' <<<"$r" )  #'
+## echo 1>&2 "DEBUG: '$r'"
+    FLT+="|$r"
+  done
+  echo "{}" | jq -r $oSORT "$FLT" | jq -r $oSORT "$baseFLT"
+
+else
+:
+  FLT+='|paths as $p| (getpath($p)|type) as $t | ($p | .[-1] |= (if type == "string" and test("[^a-zA-Z0-9_]") then "\"\(.)\"" else . end)) as $c  | ($c | join(".")) as $s| "\($s)\t\($t)\t\(getpath($p))"'
+  if [ "$oVARS" ]; then
+    cat | jq -r $oSORT "$FLT" | awk '{if( $2!="object" && $2!="array" ){print}}' | grep -P '^age\.[^.]+\s' | sed -r 's/^age.//; s/\sstring\s/=/'
+  else
+    cat | jq -r $oSORT "$FLT" | awk '{if( $2!="object" && $2!="array" ){print}}'
+  fi \
+  | ( [ ! "$oSHRT" ] && cat || (
+### this block of code is for my personal internal usage, plase skip it or remove
+    if [ "${oSHRT,,}" == u ]; then
+    echo "Use for unshortify:
+  | sed" '"s/d\./deployment./g; s/\.a\./.altair./g; s/\.w\./.web./g; s/\.c\./.common./g; s/\.i\./.instances./g; s/\.p\./.properties./g;" ' ||:
+    else
+    echo "Use for   shortify:
+  | sed" '"s/deployment\./d./g; s/\.altair\./.a./g; s/\.web\./.w./g; s/\.common\./.c./g; s/\.instances\./.i./g; s/\.properties\./.p./g;" ' ||:
+    fi
+  ) )
+fi
